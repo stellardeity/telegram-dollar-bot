@@ -25,7 +25,7 @@ request(URL, (err, res, body) => {
     switch (text) {
       case "/start":
         bot.sendMessage(
-          id,
+          userId,
           "You are welcomed by a bot for tracking the exchange rate. To see the current dollar exchange rate, send /dollar"
         );
         break;
