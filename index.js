@@ -9,10 +9,12 @@ const URL = "https://quote.rbc.ru/ticker/59111";
 request(URL, (err, res, body) => {
   const $ = cheerio.load(body);
   const userId = 648634090;
-  const dollar = $(".chart__info__sum").text();
+  let dollar = $(".chart__info__sum").text();
   let updateDollar = dollar;
 
   setInterval(() => {
+    dollar = $(".chart__info__sum").text();
+
     if (updateDollar !== dollar) {
       updateDollar = dollar;
       bot.sendMessage(userId, `Current dollar rate is ${dollar}`);
