@@ -4,14 +4,22 @@ import TelegramApi from "node-telegram-bot-api";
 const token = "2138642011:AAHQO3s7OleGMT-Tg3-MJPCLBXOk7JtaIiE";
 
 const bot = new TelegramApi(token, { polling: true });
-
 const URL = "https://quote.rbc.ru/ticker/59111";
 
 request(URL, (err, res, body) => {
   const $ = cheerio.load(body);
+  const userId = 648634090;
   const dollar = $(".chart__info__sum").text();
+  let updateDollar = dollar;
 
-  bot.on("message", async ({ text, chat: { id } }) => {
+  setInterval(() => {
+    if (updateDollar !== dollar) {
+      updateDollar = dollar;
+      bot.sendMessage(userId, `Current dollar rate is ${dollar}`);
+    }
+  }, 10000);
+
+  bot.on("message", async ({ text }) => {
     switch (text) {
       case "/start":
         bot.sendMessage(
@@ -19,14 +27,14 @@ request(URL, (err, res, body) => {
           "You are welcomed by a bot for tracking the exchange rate. To see the current dollar exchange rate, send /dollar"
         );
         break;
+      case "/follow":
+        bot.sendMessage(userId, id);
+        break;
       case "/dollar":
-        bot.sendMessage(id, `Доллар США: ${dollar}`);
+        bot.sendMessage(userId, `Доллар США: ${dollar}`);
         break;
       default:
-        bot.sendMessage(
-          id,
-          "To see the current dollar exchange rate, send /dollar"
-        );
+        bot.sendMessage(userId, "send /dollar");
     }
   });
 });
