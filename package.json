@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "nodemon index.js",
     "production": "node index.js"
@@ -13,7 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.10",
+    "mongoose": "^6.0.12",
     "node-telegram-bot-api": "^0.54.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "sequelize": "^6.9.0"
   }
 }
