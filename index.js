@@ -1,31 +1,39 @@
-import request from "request";
-import cheerio from "cheerio";
 import TelegramApi from "node-telegram-bot-api";
-const token = "2138642011:AAHQO3s7OleGMT-Tg3-MJPCLBXOk7JtaIiE";
+import getDollarNow from "./getDollarNow.js";
+import config from "./config.js";
 
-const bot = new TelegramApi(token, { polling: true });
-const URL = "https://quote.rbc.ru/ticker/59111";
+const bot = new TelegramApi(config.TOKEN, { polling: true });
+let dollarOld;
+let users = [];
 
-request(URL, (err, res, body) => {
-  const $ = cheerio.load(body);
+setInterval(() => {
+  for (let i = 0; i < users.length; i++) {
+    getDollarNow().then((dollar) => {
+      if (dollar !== dollarOld) {
+        bot.sendMessage(users[i], `The US dollar has been changed: ${dollar}`);
+        dollarOld = dollar;
+      }
+    });
+  }
+}, 1000);
 
-  let dollar = $(".chart__info__sum").text();
-  bot.on("message", async ({ text, chat: { id } }) => {
-    switch (text) {
-      case "/start":
-        bot.sendMessage(
-          id,
-          "You are welcomed by a bot for tracking the exchange rate. To see the current dollar exchange rate, send /dollar"
-        );
-        break;
-      case "/follow":
-        bot.sendMessage(id, id);
-        break;
-      case "/dollar":
-        bot.sendMessage(id, `Доллар США: ${dollar}`);
-        break;
-      default:
-        bot.sendMessage(id, "send /dollar");
-    }
-  });
+bot.on("message", async ({ text, chat: { id } }) => {
+  if (!!text.match(/javascript/gi)) {
+    bot.sendPoll(id, "Is JavaScript perfect?", ["Sure", "Of course"]);
+  } else if (text === "/start") {
+    bot.sendMessage(
+      id,
+      "You are welcomed by an exchange rate tracking bot. \nTo see the current dollar exchange rate, you can send /dollar. \nIf you want to get a dollar every time it changes, you can send /follow\nPS Try you  send /javascript "
+    );
+  } else if (text === "/dollar") {
+    getDollarNow().then((dollar) => {
+      bot.sendMessage(id, `The US dollar: ${dollar}`);
+      dollarOld = dollar;
+    });
+  } else if (text === "/follow") {
+    users.push(id);
+    bot.sendMessage(id, "Done.");
+  } else {
+    bot.sendMessage(id, "Send /dollar");
+  }
 });
