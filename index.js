@@ -25,6 +25,8 @@ bot.on("message", async ({ text, chat: { id } }) => {
       id,
       "You are welcomed by an exchange rate tracking bot. \nTo see the current dollar exchange rate, you can send /dollar. \nIf you want to get a dollar every time it changes, you can send /follow\nPS Try you  send /javascript "
     );
+  } else if (text === "/info") {
+    bot.sendMessage(id, "https://quote.rbc.ru/ticker/59111");
   } else if (text === "/dollar") {
     getDollarNow().then((dollar) => {
       bot.sendMessage(id, `The US dollar: ${dollar}`);
