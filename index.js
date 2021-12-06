@@ -1,16 +1,24 @@
 import TelegramApi from "node-telegram-bot-api";
-import getDollarNow from "./getDollarNow.js";
+import getDollarNow from "./helper/getDollarNow.js";
+import getNumberFn from "./helper/getNumber.js";
 import config from "./config.js";
 
 const bot = new TelegramApi(config.TOKEN, { polling: true });
-let dollarOld;
+
+let dollarOld = "0";
 let users = [];
 
 setInterval(() => {
   for (let i = 0; i < users.length; i++) {
     getDollarNow().then((dollar) => {
-      if (dollar !== dollarOld) {
-        bot.sendMessage(users[i], `The US dollar has been changed: ${dollar}`);
+      const first = getNumberFn(dollar);
+      const second = getNumberFn(dollarOld);
+      const changes = second - first || (second - first) % 1;
+      if (Math.abs(changes) >= users[i].change) {
+        bot.sendMessage(
+          users[i].id,
+          `US dollar ${changes > 0 ? "rose" : "fell"}: ${dollar}`
+        );
         dollarOld = dollar;
       }
     });
@@ -23,19 +31,36 @@ bot.on("message", async ({ text, chat: { id } }) => {
   } else if (text === "/start") {
     bot.sendMessage(
       id,
-      "You are welcomed by an exchange rate tracking bot. \nTo see the current dollar exchange rate, you can send /dollar. \nIf you want to get a dollar every time it changes, you can send /follow\nPS Try you  send /javascript "
+      "You are welcomed by an exchange rate tracking bot. \nTo see the current dollar exchange rate, you can send /dollar. \nIf you want to get a dollar every time it changes, you can send /follow\nPS Try you  send /javascript."
     );
   } else if (text === "/info") {
     bot.sendMessage(id, "https://quote.rbc.ru/ticker/59111");
+    const user = users.find((u) => u.id === id);
+    if (!user) {
+      bot.sendMessage(
+        id,
+        "You haven't followed yet. Enter the command /follow."
+      );
+    } else {
+      bot.sendMessage(
+        id,
+        `Now the dollar exchange rate sent when the value changes to ${user.change}.`
+      );
+    }
   } else if (text === "/dollar") {
     getDollarNow().then((dollar) => {
-      bot.sendMessage(id, `The US dollar: ${dollar}`);
+      bot.sendMessage(id, `US dollar: ${dollar.trim()}.`);
       dollarOld = dollar;
     });
   } else if (text === "/follow") {
-    users.push(id);
-    bot.sendMessage(id, "Done.");
+    const user = users.find((u) => u.id === id);
+    if (!user) {
+      users.push({ id, change: 0.2 });
+      bot.sendMessage(id, "Done.");
+    } else {
+      bot.sendMessage(id, "You have already been subscribed :).");
+    }
   } else {
-    bot.sendMessage(id, "Send /dollar");
+    bot.sendMessage(id, "Send /dollar.");
   }
 });

@@ -1,6 +1,6 @@
 import request from "request";
 import cheerio from "cheerio";
-import config from "./config.js";
+import config from "../config.js";
 
 export default function getDollarNow(URL) {
   return new Promise((resolve, reject) => {
