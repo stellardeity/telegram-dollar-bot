@@ -1,6 +1,6 @@
 const config = {
   URL: "https://quote.rbc.ru/ticker/59111",
-  TOKEN: "5047590193:AAHGMoR8RmLS8Ii1NFnkTzRvV63fz-6H6Ew",
+  TOKEN: "5001504623:AAH4n7CepVKNKIgR37Jv3C0p1QO3Nb1oxqY",
 };
 
 export default config;
