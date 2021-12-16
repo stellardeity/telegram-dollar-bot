@@ -1,3 +1,3 @@
-export default function getNumberFn(number) {
-  return +number.replace(/\,/, ".").replace(/₽/, "");
+export default function getNumberFn(string) {
+  return +string.replace(/\,/, ".").replace(/₽/, "");
 }
