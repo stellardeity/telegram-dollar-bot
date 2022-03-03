@@ -7,6 +7,7 @@ export default function getDollarNow(URL) {
     request(config.URL, (req, res, body) => {
       if (!body)
         reject({ message: "The site with need information has been deleted" });
+
       const $ = cheerio.load(body);
       const dollarContent = $(".chart__info__sum").text();
       resolve(dollarContent);

@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js",
-    "production": "node index.js"
+    "start": "nodemon NTBA_FIX_319=1 index.js",
+    "production": "NTBA_FIX_319=1 node index.js"
   },
   "keywords": [],
   "author": "",

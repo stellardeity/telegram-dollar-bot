@@ -17,7 +17,7 @@ setInterval(() => {
       if (Math.abs(changes) >= users[i].change) {
         bot.sendMessage(
           users[i].id,
-          `US dollar ${changes > 0 ? "rose" : "fell"}: ${dollar.trim()}.`
+          `US dollar: ${dollar.trim()}.`
         );
         dollarOld = dollar;
       }
